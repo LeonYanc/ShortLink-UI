@@ -1,4 +1,5 @@
 import {React, useState} from 'react';
+import axios from 'axios'; 
 import './App.css';
 
 function App() {
@@ -13,12 +14,24 @@ function App() {
     }
   }
 
-  const longToShort = () => {
+  const longToShort = async () => {
     console.log(longUrl);
+    try {
+      const response = await axios.get(`http://localhost:7000/shortToLong?url=${longUrl}`);
+      alert(response.data);
+    } catch (error) {
+        console.error(error);
+    }
   }
 
-  const shortToLong = () => {
+  const shortToLong = async () => {
     console.log(shortUrl);
+    try {
+      const response = await axios.get(`http://localhost:7000/shortToLong?url=${shortUrl}`);
+      alert(response.data);
+    } catch (error) {
+        console.error(error);
+    }
   }
 
   return (
