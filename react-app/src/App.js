@@ -5,8 +5,15 @@ import './App.css';
 function App() {
   const [longUrl, setLongUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
+  const [selectedOption, setSelectedOption] = useState('random');
 
-  function handleInputChange(event) {
+  const shortenMethods = ["random", "base62"];
+
+  const handleSelect = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleInputChange = (event) => {
     if(event.target.name === "long"){
       setLongUrl(event.target.value);
     }else if(event.target.name === "short"){
@@ -17,7 +24,7 @@ function App() {
   const longToShort = async () => {
     console.log(longUrl);
     try {
-      const response = await axios.get(`http://localhost:7000/shortToLong?url=${longUrl}`);
+      const response = await axios.post(`http://localhost:7000/longToShort?url=${longUrl}&&method=${selectedOption}`);
       alert(response.data);
     } catch (error) {
         console.error(error);
@@ -27,8 +34,7 @@ function App() {
   const shortToLong = async () => {
     console.log(shortUrl);
     try {
-      const response = await axios.get(`http://localhost:7000/shortToLong?url=${shortUrl}`);
-      alert(response.data);
+      await axios.get(`http://localhost:7000/shortToLong?url=${shortUrl}`);
     } catch (error) {
         console.error(error);
     }
@@ -39,10 +45,14 @@ function App() {
       <h1>ShortLink</h1>
       <label>Long to short</label>
       <input type="text" name="long" onChange={handleInputChange}></input>
+      <select value={selectedOption} onChange={handleSelect}>
+        {shortenMethods.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
       <button onClick={longToShort}>Convert</button>
-      <label>Short to Long</label>
-      <input type="text" name="short" onChange={handleInputChange}></input>
-      <button onClick={shortToLong}>Convert</button>
     </div>
   );
 }
