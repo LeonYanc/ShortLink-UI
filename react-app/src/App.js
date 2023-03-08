@@ -1,7 +1,7 @@
 import {React, useState} from 'react';
 import axios from 'axios'; 
 import './App.css';
-import Config from '../configData.json';
+import Config from './configData.json';
 
 function App() {
   const [longUrl, setLongUrl] = useState('');
