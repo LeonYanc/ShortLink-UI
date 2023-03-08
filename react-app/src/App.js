@@ -1,6 +1,7 @@
 import {React, useState} from 'react';
 import axios from 'axios'; 
 import './App.css';
+import Config from '../configData.json';
 
 function App() {
   const [longUrl, setLongUrl] = useState('');
@@ -20,7 +21,7 @@ function App() {
   const longToShort = async () => {
     console.log(longUrl);
     try {
-      const response = await axios.post(`http://localhost:7000/longToShort?url=${longUrl}&&method=${selectedOption}`);
+      const response = await axios.post(`${Config.longToShortUrl}?url=${longUrl}&&method=${selectedOption}`);
       alert(response.data);
       const pair = {};
       pair[longUrl] = response.data;
