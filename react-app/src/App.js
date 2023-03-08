@@ -1,11 +1,12 @@
 import {React, useState} from 'react';
 import axios from 'axios'; 
 import './App.css';
+import Config from './configData.json';
 
 function App() {
   const [longUrl, setLongUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
   const [selectedOption, setSelectedOption] = useState('random');
+  const [urlMap, setMap] = useState([]);
 
   const shortenMethods = ["random", "base62"];
 
@@ -14,27 +15,19 @@ function App() {
   };
 
   const handleInputChange = (event) => {
-    if(event.target.name === "long"){
-      setLongUrl(event.target.value);
-    }else if(event.target.name === "short"){
-      setShortUrl(event.target.value);
-    }
+    setLongUrl(event.target.value);
   }
 
   const longToShort = async () => {
     console.log(longUrl);
     try {
-      const response = await axios.post(`http://localhost:7000/longToShort?url=${longUrl}&&method=${selectedOption}`);
+      const response = await axios.post(`${Config.longToShortUrl}?url=${longUrl}&&method=${selectedOption}`);
       alert(response.data);
-    } catch (error) {
-        console.error(error);
-    }
-  }
-
-  const shortToLong = async () => {
-    console.log(shortUrl);
-    try {
-      await axios.get(`http://localhost:7000/shortToLong?url=${shortUrl}`);
+      const pair = {};
+      pair[longUrl] = response.data;
+      setMap([...urlMap, pair]);
+      document.getElementById("longInput").value='';
+      setLongUrl('');
     } catch (error) {
         console.error(error);
     }
@@ -44,7 +37,7 @@ function App() {
     <div className="App">
       <h1>ShortLink</h1>
       <label>Long to short</label>
-      <input type="text" name="long" onChange={handleInputChange}></input>
+      <input id="longInput" type="text" name="long" onChange={handleInputChange}></input>
       <select value={selectedOption} onChange={handleSelect}>
         {shortenMethods.map((option) => (
           <option key={option} value={option}>
@@ -53,6 +46,18 @@ function App() {
         ))}
       </select>
       <button onClick={longToShort}>Convert</button>
+      {urlMap.length>0? 
+        <div>{urlMap.map((obj, index) => (
+          <ul key={index} style={{listStyleType : "none"}}>
+            {Object.entries(obj).map(([key, value]) => (
+              <li key={key}>
+                <label>{key}: </label>
+                <a href={value}>{value}</a>
+              </li>
+            ))}
+          </ul>
+        ))}</div>
+         : <></>}
     </div>
   );
 }
